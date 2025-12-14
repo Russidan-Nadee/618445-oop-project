@@ -1,0 +1,69 @@
+//  Database Connection
+
+datasource db {
+   provider = "postgresql" // เปลี่ยนตามที่ใช้: mysql, sqlite ฯลฯ
+   url      = env("DATABASE_URL")
+}
+
+generator client {
+   provider = "prisma-client-js"
+}
+
+//  Models
+
+// 1) Asset
+model Asset {
+   id           Int      @id @default(autoincrement())
+   name         String
+   serialNumber String
+   status       String
+   purchaseDate DateTime
+
+   typeId Int
+   type   AssetType @relation(fields: [typeId], references: [id])
+
+   transactions Transaction[]
+}
+
+// 2) AssetType
+model AssetType {
+   id     Int     @id @default(autoincrement())
+   name   String
+   assets Asset[]
+}
+
+// 3) User
+model User {
+   id       Int    @id @default(autoincrement())
+   fullName String
+   email    String @unique
+   role     String
+
+   transactions Transaction[]
+   logs         Log[]
+}
+
+// 4) Transaction
+model Transaction {
+   id         Int      @id @default(autoincrement())
+   action     String // borrow | return
+   actionDate DateTime
+   note       String?
+
+   userId  Int
+   assetId Int
+
+   user  User  @relation(fields: [userId], references: [id])
+   asset Asset @relation(fields: [assetId], references: [id])
+}
+
+// 5) Log
+model Log {
+   id        Int      @id @default(autoincrement())
+   action    String
+   targetId  Int
+   timestamp DateTime @default(now())
+
+   userId Int
+   user   User @relation(fields: [userId], references: [id])
+}
