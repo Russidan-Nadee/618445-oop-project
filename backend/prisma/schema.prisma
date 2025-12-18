@@ -1,16 +1,22 @@
-//  Database Connection
-
+// Database Connection
 datasource db {
-   provider = "postgresql" // เปลี่ยนตามที่ใช้: mysql, sqlite ฯลฯ
+   provider = "postgresql"
 }
 
 generator client {
    provider = "prisma-client-js"
 }
 
-//  Models
+// Enums
+enum Role {
+   ADMIN
+   STAFF
+   USER
+}
 
-// 1) Assetx
+// Models
+
+// 1) Asset
 model Asset {
    id           Int      @id @default(autoincrement())
    name         String
@@ -26,8 +32,9 @@ model Asset {
 
 // 2) AssetType
 model AssetType {
-   id     Int     @id @default(autoincrement())
-   name   String
+   id   Int    @id @default(autoincrement())
+   name String
+
    assets Asset[]
 }
 
@@ -36,7 +43,7 @@ model User {
    id       Int    @id @default(autoincrement())
    fullName String
    email    String @unique
-   role     String
+   role     Role   @default(USER)
 
    transactions Transaction[]
    logs         Log[]
