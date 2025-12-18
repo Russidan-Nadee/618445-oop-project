@@ -8,6 +8,13 @@ generator client {
 }
 
 // Enums
+enum AssetStatus {
+   AVAILABLE
+   BORROWED
+   BROKEN
+   DISABLED
+}
+
 enum Role {
    ADMIN
    STAFF
@@ -18,10 +25,10 @@ enum Role {
 
 // 1) Asset
 model Asset {
-   id           Int      @id @default(autoincrement())
+   id           Int         @id @default(autoincrement())
    name         String
    serialNumber String
-   status       String
+   status       AssetStatus @default(AVAILABLE)
    purchaseDate DateTime
 
    typeId Int
