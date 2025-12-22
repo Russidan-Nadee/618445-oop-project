@@ -1,5 +1,5 @@
 
-import { Body, Controller, Get, Param, Post, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, ParseIntPipe, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 
@@ -23,6 +23,13 @@ export class TransactionsController {
       return this.transactionsService.findAll();
    }
 
+   @Get('trend')
+   async getTrend(@Query('days') days: string) {
+      // แปลง string จาก query เป็น number และกำหนดค่าเริ่มต้นเป็น 30 วัน
+      const period = parseInt(days) || 30;
+      return this.transactionsService.getTrend(period);
+
+   }
    //GET TRANSACTION BY USER ID
    @Get('user/:id')
    findByUserId(

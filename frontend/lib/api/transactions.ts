@@ -3,6 +3,7 @@ import {
    Transaction,
    BorrowAssetPayload,
    ReturnAssetPayload,
+   TrendData,
 } from '@/types/transaction';
 
 /**
@@ -49,4 +50,11 @@ export async function getTransactionsByAssetId(
    assetId: number
 ): Promise<Transaction[]> {
    return fetcher<Transaction[]>(`/transactions/asset/${assetId}`);
+}
+
+// GET /transactions/trend
+export async function getTransactionTrend(
+   days: number
+): Promise<TrendData[]> {
+   return fetcher<TrendData[]>(`/transactions/trend?days=${days}`);
 }
