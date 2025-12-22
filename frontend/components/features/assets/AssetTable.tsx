@@ -7,7 +7,6 @@ import {
    Tag,
    Loader2,
    Plus,
-   Calendar,
    RotateCcw,
    Handshake,
    MessageSquare
@@ -17,12 +16,13 @@ import { borrowAsset, returnAsset } from "@/lib/api/transactions";
 import { Asset, AssetStatus } from "@/types/asset";
 import CreateAssetDialog from "./CreateAssetDialog";
 
-const CURRENT_USER_ID = 1;
-
 export default function AssetTable() {
    const [assets, setAssets] = useState<Asset[]>([]);
    const [loading, setLoading] = useState(true);
    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+   // ดึงข้อมูล User จาก localStorage
+   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
    const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
@@ -41,7 +41,14 @@ export default function AssetTable() {
       }
    };
 
-   useEffect(() => { loadAssets(); }, []);
+   useEffect(() => {
+      // ดึง ID ของผู้ใช้ที่ Login อยู่จริงจาก localStorage
+      const savedId = localStorage.getItem("user_id");
+      if (savedId) {
+         setCurrentUserId(Number(savedId));
+      }
+      loadAssets();
+   }, []);
 
    const openConfirmDialog = (asset: Asset) => {
       setSelectedAsset(asset);
@@ -50,11 +57,14 @@ export default function AssetTable() {
    };
 
    const handleExecuteAction = async () => {
-      if (!selectedAsset) return;
+      if (!selectedAsset || !currentUserId) {
+         alert("User identity not found. Please log in again.");
+         return;
+      }
 
       setProcessingId(selectedAsset.id);
       const payload = {
-         userId: CURRENT_USER_ID,
+         userId: currentUserId,
          assetId: selectedAsset.id,
          note: note.trim() || `Transaction via Asset Dashboard`
       };
@@ -109,11 +119,11 @@ export default function AssetTable() {
                <table className="w-full text-left border-collapse">
                   <thead>
                      <tr className="bg-main-bg border-b border-head-border text-txt-sub">
-                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-txt-sub">Asset Details</th>
-                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-txt-sub">Category</th>
-                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-center text-txt-sub">Purchase Date</th>
-                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-center text-txt-sub">Status</th>
-                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-right text-txt-sub">Action</th>
+                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest">Asset Details</th>
+                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest">Category</th>
+                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-center">Purchase Date</th>
+                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-center">Status</th>
+                        <th className="p-4 text-[10px] font-bold uppercase tracking-widest text-right">Action</th>
                      </tr>
                   </thead>
                   <tbody className="divide-y divide-head-border">
@@ -156,7 +166,7 @@ export default function AssetTable() {
                                  <div className="flex justify-end">
                                     <button
                                        onClick={() => openConfirmDialog(asset)}
-                                       disabled={!isAvailable && !isBorrowed}
+                                       disabled={(!isAvailable && !isBorrowed) || !!processingId}
                                        className={`min-w-[120px] py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed
                                           ${isAvailable ? "bg-brand text-txt-white shadow-md shadow-brand/10 active:scale-95"
                                              : isBorrowed ? "bg-head-bg border-2 border-brand text-brand hover:bg-brand-soft active:scale-95"
@@ -179,7 +189,6 @@ export default function AssetTable() {
             <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                <div className="bg-head-bg w-full max-w-sm rounded-[2.5rem] shadow-2xl border border-head-border overflow-hidden animate-in zoom-in-95 duration-200">
                   <div className="p-8 space-y-6">
-                     {/* Icon & Title */}
                      <div className="text-center space-y-4">
                         <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto shadow-inner 
                            ${selectedAsset.status === AssetStatus.AVAILABLE ? 'bg-brand-soft text-brand' : 'bg-status-ok-bg text-status-ok'}`}>
@@ -195,7 +204,6 @@ export default function AssetTable() {
                         </div>
                      </div>
 
-                     {/* Note Input */}
                      <div className="space-y-2">
                         <label className="text-[10px] font-bold text-txt-sub uppercase tracking-wider flex items-center gap-2 px-1">
                            <MessageSquare size={12} /> Note (Optional)
@@ -209,7 +217,6 @@ export default function AssetTable() {
                      </div>
                   </div>
 
-                  {/* Buttons */}
                   <div className="flex border-t border-head-border bg-main-bg/50">
                      <button
                         onClick={() => setIsConfirmOpen(false)}
