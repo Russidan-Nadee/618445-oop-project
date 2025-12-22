@@ -58,5 +58,6 @@ frontend/
 │  ├─ asset.ts
 │  ├─ user.ts
 │  └─ transaction.ts
+│  └─ asset-types.ts
 │
 └─ public/

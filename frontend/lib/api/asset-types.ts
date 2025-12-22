@@ -1,5 +1,5 @@
 import { fetcher } from '@/lib/fetcher'
-import { AssetType } from '@/types/asset-type'
+import { AssetType } from '@/types/assetType'
 
 /**
  * Asset Types API
