@@ -1,14 +1,13 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Box, Users, History, FileText } from 'lucide-react';
+import { LayoutDashboard, Box, History, Users } from 'lucide-react';
 
 const menuItems = [
    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
    { name: 'Assets', href: '/assets', icon: Box },
-   { name: 'Users', href: '/users', icon: Users },
-   { name: 'Transactions', href: '/transactions', icon: History },
-   { name: 'Logs', href: '/logs', icon: FileText },
+   { name: 'History', href: '/history', icon: History },
+   { name: 'Admin', href: '/log', icon: Users },
 ];
 
 export default function Sidebar() {
