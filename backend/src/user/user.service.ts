@@ -29,9 +29,17 @@ export class UserService {
       })
    }
 
+
    remove(id: number) {
       return this.prisma.user.delete({
          where: { id },
+      })
+   }
+
+   // GET user by email
+   findByEmail(email: string) {
+      return this.prisma.user.findUnique({
+         where: { email },
       })
    }
 }
