@@ -19,3 +19,10 @@ export interface Asset {
    typeId: number;
    type: AssetType;
 }
+
+export interface AssetStats {
+   total: number;
+   available: number;
+   borrowed: number;
+   brokenDisabled: number;
+}
