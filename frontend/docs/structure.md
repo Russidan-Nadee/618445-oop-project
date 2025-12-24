@@ -44,20 +44,19 @@ frontend/
 │
 ├─ components/
 │  ├─ assets/
-│  │  ├─ AssetTable.tsx
-│  │  └─ AssetForm.tsx
-│  │
 │  ├─ users/
 │  ├─ transactions/
 │  │
-│  └─ common/
-│     ├─ Button.tsx
-│     └─ Modal.tsx
-│
+│  ├─ common/
+│  │  └─ Botton.ts
+│  └─ layout/
+│     ├─ header.ts
+│     └─ sidebar.ts
 ├─ types/
 │  ├─ asset.ts
 │  ├─ user.ts
-│  └─ transaction.ts
-│  └─ asset-types.ts
+│  ├─ transaction.ts
+│  ├─ assetTypes.ts
+│  └─ logs.ts
 │
 └─ public/

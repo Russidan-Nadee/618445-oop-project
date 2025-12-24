@@ -28,16 +28,22 @@ export class AssetsController {
       return this.assetsService.findAll()
    }
 
-   // READ ONE
-   @Get(':id')
-   findOne(@Param('id', ParseIntPipe) id: number) {
-      return this.assetsService.findOne(id)
+   // GET STATS (ต้องอยู่ก่อน :id)
+   @Get('stats')
+   async getAssetStats() {
+      return this.assetsService.getAssetStats();
    }
 
-   // READ BY TYPE
+   // READ BY TYPE (ต้องอยู่ก่อน :id)
    @Get('type/:typeId')
    findByType(@Param('typeId', ParseIntPipe) typeId: number) {
       return this.assetsService.findByType(typeId)
+   }
+
+   // READ ONE (ต้องอยู่ท้ายสุด)
+   @Get(':id')
+   findOne(@Param('id', ParseIntPipe) id: number) {
+      return this.assetsService.findOne(id)
    }
 
    // UPDATE

@@ -29,6 +29,29 @@ export class AssetsService {
       })
    }
 
+   // GET STATS
+   async getAssetStats() {
+      const [total, statusCounts] = await Promise.all([
+         this.prisma.asset.count(),
+         this.prisma.asset.groupBy({
+            by: ['status'],
+            _count: { id: true },
+         }),
+      ]);
+
+      const stats = statusCounts.reduce((acc, curr) => {
+         acc[curr.status] = curr._count.id;
+         return acc;
+      }, {} as Record<string, number>);
+
+      return {
+         total,
+         available: stats.AVAILABLE || 0,
+         borrowed: stats.BORROWED || 0,
+         brokenDisabled: (stats.BROKEN || 0) + (stats.DISABLED || 0),
+      };
+   }
+
    // READ ONE
    async findOne(id: number) {
       const asset = await this.prisma.asset.findUnique({
@@ -75,4 +98,6 @@ export class AssetsService {
          where: { id },
       })
    }
+
+
 }

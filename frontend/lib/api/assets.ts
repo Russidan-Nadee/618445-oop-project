@@ -1,5 +1,5 @@
 import { fetcher } from "../fetcher";
-import { Asset } from '@/types/asset';
+import { Asset, AssetStats } from '@/types/asset';
 
 /**
  * Assets API
@@ -11,6 +11,11 @@ import { Asset } from '@/types/asset';
 // GET /assets
 export async function getAssets(): Promise<Asset[]> {
    return fetcher<Asset[]>('/assets');
+}
+
+// GET /assets/stats
+export async function getAssetStats(): Promise<AssetStats> {
+   return fetcher('/assets/stats');
 }
 
 // GET /assets/:id
