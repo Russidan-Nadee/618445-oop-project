@@ -5,17 +5,15 @@ import { LogService } from './log.service'
 export class LogController {
    constructor(private readonly logService: LogService) { }
 
-   /**
-    * GET /logs
-    */
+   // GET /logs
+
    @Get()
    findAll() {
       return this.logService.findAll()
    }
 
-   /**
-    * GET /logs/user/:userId
-    */
+   //GET /logs/user/:userId
+
    @Get('user/:userId')
    findByUser(
       @Param('userId', ParseIntPipe) userId: number,
@@ -23,9 +21,8 @@ export class LogController {
       return this.logService.findByUser(userId)
    }
 
-   /**
-    * GET /logs/target/:targetId
-    */
+   // GET /logs/target/:targetId
+
    @Get('target/:targetId')
    findByTarget(
       @Param('targetId', ParseIntPipe) targetId: number,
