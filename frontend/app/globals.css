@@ -1,48 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  /* Layout Surfaces */
   --bg-sidebar: #0f172a;
-  /* slate-900 */
   --bg-header: #ffffff;
   --bg-main: #f8fafc;
-  /* gray-50 */
-
-  /* Borders */
   --border-sidebar: #1e293b;
-  /* slate-800 */
   --border-header: #e2e8f0;
-  /* gray-200 */
-
-  /* Interactive & Brand */
   --brand-main: #2563eb;
-  /* blue-600 */
   --brand-surface: #eff6ff;
-  /* blue-50 */
-
-  /* Text */
   --text-main: #0f172a;
   --text-muted: #64748b;
   --text-on-brand: #ffffff;
   --text-sidebar: #94a3b8;
-  /* slate-400 */
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
 }
 
 @theme {
-  /* Sidebar Mapping */
   --color-side-bg: var(--bg-sidebar);
   --color-side-border: var(--border-sidebar);
   --color-side-text: var(--text-sidebar);
-
-  /* Header & Page Mapping */
   --color-head-bg: var(--bg-header);
   --color-head-border: var(--border-header);
   --color-main-bg: var(--bg-main);
-
-  /* Shared Semantic Mapping */
   --color-brand: var(--brand-main);
   --color-brand-soft: var(--brand-surface);
   --color-txt-main: var(--text-main);
   --color-txt-sub: var(--text-muted);
   --color-txt-white: var(--text-on-brand);
+  --color-status-ok: var(--color-success);
+  --color-status-ok-bg: var(--color-success-bg);
+  --color-status-warn: var(--color-warning);
+  --color-status-warn-bg: var(--color-warning-bg);
+  --color-status-err: var(--color-danger);
+  --color-status-err-bg: var(--color-danger-bg);
 }
