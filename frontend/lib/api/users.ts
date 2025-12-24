@@ -49,3 +49,8 @@ export async function deleteUser(id: number): Promise<void> {
       method: 'DELETE',
    });
 }
+
+// GET /users/email/:email
+export async function getUserByEmail(email: string): Promise<User | null> {
+   return fetcher<User | null>(`/users/email/${email}`);
+}
