@@ -1,67 +1,95 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
+import {
+   Injectable,
+   BadRequestException,
+   NotFoundException,
+} from '@nestjs/common'
+import { PrismaService } from '../prisma/prisma.service'
+import { CreateTransactionDto } from './dto/create-transaction.dto'
+import { LogService } from '../log/log.service'
 
 @Injectable()
 export class TransactionsService {
-   constructor(private readonly prisma: PrismaService) { }
+   constructor(
+      private readonly prisma: PrismaService,
+      private readonly logService: LogService,
+   ) { }
 
    async borrow(dto: CreateTransactionDto) {
-      const asset = await this.prisma.asset.findUnique({
-         where: { id: dto.assetId },
-      });
+      return this.prisma.$transaction(async (tx) => {
+         const asset = await tx.asset.findUnique({
+            where: { id: dto.assetId },
+         })
 
-      if (!asset) throw new NotFoundException('Asset not found');
-      if (asset.status !== 'AVAILABLE')
-         throw new BadRequestException('Asset is not available for borrowing');
+         if (!asset) throw new NotFoundException('Asset not found')
+         if (asset.status !== 'AVAILABLE') {
+            throw new BadRequestException('Asset is not available for borrowing')
+         }
 
-      // update status
-      await this.prisma.asset.update({
-         where: { id: dto.assetId },
-         data: { status: 'BORROWED' },
-      });
+         // 1. update asset status
+         await tx.asset.update({
+            where: { id: dto.assetId },
+            data: { status: 'BORROWED' },
+         })
 
-      // create transaction
-      const transaction = await this.prisma.transaction.create({
-         data: {
-            action: 'borrow',
-            actionDate: new Date(),
-            note: dto.note,
-            userId: dto.userId,
-            assetId: dto.assetId,
-         },
-      });
+         // 2. create transaction
+         const transaction = await tx.transaction.create({
+            data: {
+               action: 'borrow',
+               actionDate: new Date(),
+               note: dto.note,
+               userId: dto.userId,
+               assetId: dto.assetId,
+            },
+         })
 
-      return transaction;
+         // 3. create log (ยืม)
+         await this.logService.createLog(
+            dto.userId,
+            'BORROW_ASSET',
+            dto.assetId,
+         )
+
+         return transaction
+      })
    }
 
    async return(dto: CreateTransactionDto) {
-      const asset = await this.prisma.asset.findUnique({
-         where: { id: dto.assetId },
-      });
+      return this.prisma.$transaction(async (tx) => {
+         const asset = await tx.asset.findUnique({
+            where: { id: dto.assetId },
+         })
 
-      if (!asset) throw new NotFoundException('Asset not found');
-      if (asset.status !== 'BORROWED')
-         throw new BadRequestException('Asset is not currently borrowed');
+         if (!asset) throw new NotFoundException('Asset not found')
+         if (asset.status !== 'BORROWED') {
+            throw new BadRequestException('Asset is not currently borrowed')
+         }
 
-      // update status
-      await this.prisma.asset.update({
-         where: { id: dto.assetId },
-         data: { status: 'AVAILABLE' },
-      });
+         // 1. update asset status
+         await tx.asset.update({
+            where: { id: dto.assetId },
+            data: { status: 'AVAILABLE' },
+         })
 
-      // create transaction
-      const transaction = await this.prisma.transaction.create({
-         data: {
-            action: 'return',
-            actionDate: new Date(),
-            note: dto.note,
-            userId: dto.userId,
-            assetId: dto.assetId,
-         },
-      });
+         // 2. create transaction
+         const transaction = await tx.transaction.create({
+            data: {
+               action: 'return',
+               actionDate: new Date(),
+               note: dto.note,
+               userId: dto.userId,
+               assetId: dto.assetId,
+            },
+         })
 
-      return transaction;
+         // 3. create log (คืน)
+         await this.logService.createLog(
+            dto.userId,
+            'RETURN_ASSET',
+            dto.assetId,
+         )
+
+         return transaction
+      })
    }
 
    // GET ALL TRANSACTIONS
@@ -74,15 +102,16 @@ export class TransactionsService {
          orderBy: {
             actionDate: 'desc',
          },
-      });
+      })
    }
 
-   //GET TRANSACTION BY USER ID
+   // GET TRANSACTION BY USER ID
    async findByUserId(userId: number) {
       const userExists = await this.prisma.user.findUnique({
          where: { id: userId },
-      });
-      if (!userExists) throw new NotFoundException('User not found');
+      })
+
+      if (!userExists) throw new NotFoundException('User not found')
 
       return this.prisma.transaction.findMany({
          where: { userId },
@@ -93,17 +122,16 @@ export class TransactionsService {
          orderBy: {
             actionDate: 'desc',
          },
-      });
+      })
    }
-   /// GET TRANSACTION BY ASSET ID
+
+   // GET TRANSACTION BY ASSET ID
    async findByAssetId(assetId: number) {
       const assetExists = await this.prisma.asset.findUnique({
          where: { id: assetId },
-      });
+      })
 
-      if (!assetExists) {
-         throw new NotFoundException('Asset not found');
-      }
+      if (!assetExists) throw new NotFoundException('Asset not found')
 
       return this.prisma.transaction.findMany({
          where: { assetId },
@@ -114,6 +142,6 @@ export class TransactionsService {
          orderBy: {
             actionDate: 'desc',
          },
-      });
+      })
    }
 }
