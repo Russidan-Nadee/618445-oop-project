@@ -105,6 +105,60 @@ export class TransactionsService {
       })
    }
 
+   // GET TRANSACTION TREND
+   async getTrend(days: number) {
+      // 1. กำหนดช่วงเวลาเริ่มต้น (ย้อนหลังไปตามจำนวนวันที่ระบุ)
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - (days - 1));
+      startDate.setHours(0, 0, 0, 0); // เริ่มต้นที่เวลา 00:00 ของวันแรก
+
+      // 2. ดึงข้อมูลจาก Database เฉพาะช่วงวันที่ต้องการ
+      const transactions = await this.prisma.transaction.findMany({
+         where: {
+            actionDate: {
+               gte: startDate,
+            },
+         },
+         select: {
+            action: true,      // ดูว่าเป็น 'borrow' หรือ 'return'
+            actionDate: true,  // ดูว่าเกิดวันที่เท่าไหร่
+         },
+      });
+
+      // 3. เตรียม Map สำหรับเก็บข้อมูลรายวัน (ป้องกันกราฟแหว่งในวันที่ไม่มี Transaction)
+      const trendMap = new Map<string, { date: string; borrowed: number; returned: number }>();
+
+      for (let i = 0; i < days; i++) {
+         const d = new Date(startDate);
+         d.setDate(d.getDate() + i);
+         const dateStr = d.toISOString().split('T')[0]; // format: "YYYY-MM-DD"
+         trendMap.set(dateStr, {
+            date: dateStr,
+            borrowed: 0,
+            returned: 0,
+         });
+      }
+
+      // 4. นำข้อมูลจาก DB มานับจำนวนลงใน Map
+      transactions.forEach((tx) => {
+         const dateStr = tx.actionDate.toISOString().split('T')[0];
+         const dayData = trendMap.get(dateStr);
+
+         if (dayData) {
+            if (tx.action === 'borrow') {
+               dayData.borrowed += 1;
+            } else if (tx.action === 'return') {
+               dayData.returned += 1;
+            }
+         }
+      });
+
+      // 5. แปลง Map กลับเป็น Array และเรียงลำดับวันที่จากเก่าไปใหม่
+      return Array.from(trendMap.values()).sort((a, b) =>
+         a.date.localeCompare(b.date)
+      );
+   }
+
    // GET TRANSACTION BY USER ID
    async findByUserId(userId: number) {
       const userExists = await this.prisma.user.findUnique({

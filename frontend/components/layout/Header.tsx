@@ -8,7 +8,6 @@ export default function Header() {
    const pathname = usePathname();
    const pathSegments = pathname.split('/').filter(Boolean);
 
-   // สร้าง State สำหรับเก็บข้อมูล User
    const [user, setUser] = useState({
       name: 'Guest',
       role: 'User',
@@ -16,11 +15,8 @@ export default function Header() {
    });
 
    useEffect(() => {
-      // ดึงข้อมูลจาก localStorage หลัง Component mount
       const name = localStorage.getItem("user_name") || "Unknown User";
       const role = localStorage.getItem("user_role") || "Guest";
-
-      // สร้างอักษรย่อจากชื่อ (เช่น Admin User -> AU)
       const initials = name
          .split(' ')
          .map(n => n[0])
@@ -33,8 +29,8 @@ export default function Header() {
 
    const handleLogout = () => {
       if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-         localStorage.clear(); // ลบข้อมูลทั้งหมด
-         window.location.reload(); // รีโหลดหน้าเพื่อกลับไปหน้า EmailGate
+         localStorage.clear();
+         window.location.reload();
       }
    };
 
@@ -43,11 +39,11 @@ export default function Header() {
    };
 
    return (
-      <header className="h-16 bg-head-bg border-b border-head-border flex items-center justify-between px-8 sticky top-0 z-40 w-full">
+      <header className="h-20 bg-head-bg border-b border-head-border flex items-center justify-between px-8 sticky top-0 z-40 w-full">
 
-         {/* Left Side: Breadcrumbs Navigation */}
-         <nav className="flex items-center text-sm">
-            <span className="text-txt-sub hover:text-brand cursor-pointer transition-colors font-medium">
+         {/* Left Side: Breadcrumbs Navigation - ขยายเป็น text-lg (18px) */}
+         <nav className="flex items-center text-lg">
+            <span className="text-txt-sub hover:text-brand cursor-pointer transition-colors font-semibold">
                Main
             </span>
 
@@ -56,8 +52,8 @@ export default function Header() {
                   const isLast = index === pathSegments.length - 1;
                   return (
                      <div key={index} className="flex items-center">
-                        <ChevronRight size={14} className="mx-2.5 text-txt-sub/30" />
-                        <span className={`transition-colors ${isLast ? 'text-brand font-bold' : 'text-txt-sub hover:text-txt-main font-medium'
+                        <ChevronRight size={20} className="mx-3 text-txt-sub/30" />
+                        <span className={`transition-colors ${isLast ? 'text-brand font-bold' : 'text-txt-sub hover:text-txt-main font-semibold'
                            }`}>
                            {getLabel(segment)}
                         </span>
@@ -66,39 +62,42 @@ export default function Header() {
                })
             ) : (
                <div className="flex items-center">
-                  <ChevronRight size={14} className="mx-2.5 text-txt-sub/30" />
+                  <ChevronRight size={20} className="mx-3 text-txt-sub/30" />
                   <span className="font-bold text-brand">{menuConfig.defaultTitle}</span>
                </div>
             )}
          </nav>
 
          {/* Right Side: Profile & Logout Section */}
-         <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 pl-4 pr-1 py-1 rounded-2xl border border-transparent">
+         <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4">
                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold text-txt-main leading-none transition-colors">
+                  {/* ชื่อผู้ใช้ปรับเป็น text-lg */}
+                  <p className="text-lg font-bold text-txt-main leading-tight transition-colors">
                      {user.name}
                   </p>
-                  <p className="text-[10px] text-txt-sub mt-1.5 uppercase tracking-[0.1em] font-bold opacity-80">
+                  {/* บทบาทปรับเป็น text-sm (14px) เพื่อให้อ่านออกชัดเจน */}
+                  <p className="text-sm text-txt-sub mt-1 uppercase tracking-wider font-bold opacity-90">
                      {user.role}
                   </p>
                </div>
 
                <div className="relative">
-                  <div className="w-10 h-10 bg-brand-soft text-brand rounded-xl flex items-center justify-center font-bold border-2 border-transparent transition-all">
+                  {/* ขยาย Avatar เป็น w-12 h-12 และตัวอักษรข้างในเป็น text-xl */}
+                  <div className="w-12 h-12 bg-brand-soft text-brand rounded-xl flex items-center justify-center text-xl font-bold border-2 border-transparent shadow-sm">
                      {user.initials}
                   </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-head-bg rounded-full"></span>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 border-2 border-head-bg rounded-full"></span>
                </div>
             </div>
 
-            {/* Logout Button */}
+            {/* Logout Button ขยายไอคอนเป็น size 24 */}
             <button
                onClick={handleLogout}
-               className="p-2 text-txt-sub hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+               className="p-3 text-txt-sub hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                title="Logout"
             >
-               <LogOut size={18} />
+               <LogOut size={24} />
             </button>
          </div>
 

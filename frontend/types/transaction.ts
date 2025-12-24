@@ -31,3 +31,9 @@ export interface ReturnAssetPayload {
    assetId: number;
    note?: string;
 }
+
+export interface TrendData {
+   date: string;
+   borrowed: number;
+   returned: number;
+}
