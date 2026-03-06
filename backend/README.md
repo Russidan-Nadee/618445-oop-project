@@ -1,98 +1,250 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend - Asset Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS API server for the Asset Management System
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Overview
 
-## Description
+This backend uses the **NestJS** framework with **Prisma ORM** to manage the organization's asset database. It provides RESTful APIs for the frontend application.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- **Runtime**: Node.js 18+
+- **Framework**: NestJS 11
+- **ORM**: Prisma 6.19.1
+- **Database**: PostgreSQL (Supabase)
+- **Validation**: class-validator, class-transformer
+- **Testing**: Jest
+
+## Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- PostgreSQL database (or use Supabase)
+
+## Installation
 
 ```bash
-$ npm install
+# Install dependencies
+npm install
+
+# Setup environment variables
+# Copy .env.example to .env and update DATABASE_URL
+cp .env.example .env
 ```
 
-## Compile and run the project
+## Setup Database
 
 ```bash
-# development
-$ npm run start
+# Run migrations
+npx prisma migrate dev
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# (Optional) Open Prisma Studio to view data
+npx prisma studio
 ```
 
-## Run tests
+## Running the Application
+
+### Development Mode
+```bash
+npm run start:dev
+```
+Backend will run at `http://localhost:3001` with auto-reload on changes
+
+### Production Mode
+```bash
+npm run build
+npm run start:prod
+```
+
+## Project Structure
+
+```
+src/
+├── asset-type/
+│   ├── asset-type.controller.ts    # Endpoints
+│   ├── asset-type.service.ts       # Business logic
+│   ├── asset-type.module.ts
+│   └── dto/
+│       └── create-asset-type.dto.ts
+│
+├── assets/
+│   ├── assets.controller.ts
+│   ├── assets.service.ts
+│   ├── assets.module.ts
+│   └── dto/
+│       ├── create-asset.dto.ts
+│       └── update-asset.dto.ts
+│
+├── transactions/
+│   ├── transactions.controller.ts
+│   ├── transactions.service.ts
+│   ├── transactions.module.ts
+│   └── dto/
+│       └── create-transaction.dto.ts
+│
+├── user/
+│   ├── user.controller.ts
+│   ├── user.service.ts
+│   ├── user.module.ts
+│   ├── dto/
+│   │   ├── create-user.dto.ts
+│   │   └── update-user.dto.ts
+│   └── entities/
+│       └── user.entity.ts
+│
+├── log/
+│   ├── log.controller.ts
+│   ├── log.service.ts
+│   └── log.module.ts
+│
+├── prisma/
+│   ├── prisma.service.ts          # Database service
+│   └── prisma.module.ts
+│
+├── app.module.ts                  # Root module
+└── main.ts                        # Entry point
+```
+
+## API Endpoints
+
+### Asset Type Management
+- `GET /asset-type` - Get all asset types
+- `GET /asset-type/:id` - Get specific asset type
+- `POST /asset-type` - Create new asset type
+- `PATCH /asset-type/:id` - Update asset type
+- `DELETE /asset-type/:id` - Delete asset type
+
+### Asset Management
+- `GET /assets` - Get all assets
+- `GET /assets/:id` - Get specific asset
+- `POST /assets` - Create new asset
+- `PATCH /assets/:id` - Update asset
+- `DELETE /assets/:id` - Delete asset
+
+### User Management
+- `GET /user` - Get all users
+- `GET /user/:id` - Get specific user
+- `POST /user` - Create new user
+- `PATCH /user/:id` - Update user
+- `DELETE /user/:id` - Delete user
+
+### Transaction Management
+- `GET /transactions` - Get all transactions
+- `GET /transactions/:id` - Get specific transaction
+- `POST /transactions` - Record new transaction
+- `PATCH /transactions/:id` - Update transaction
+- `DELETE /transactions/:id` - Delete transaction
+
+### Log Management
+- `GET /log` - Get activity logs
+- `GET /log/:id` - Get specific log entry
+
+See [API Documentation](./docs/) for more details
+
+## Environment Variables
+
+```env
+# Database Configuration
+DATABASE_URL="postgresql://username:password@host:port/database"
+
+# Supabase (if using)
+SUPABASE_URL="https://your-project-id.supabase.co"
+
+# Node Environment
+NODE_ENV="development"
+```
+
+## Available Scripts
 
 ```bash
-# unit tests
-$ npm run test
+# Development
+npm run start:dev      # Run with watch mode
+npm run start:debug    # Run with debug mode
 
-# e2e tests
-$ npm run test:e2e
+# Production
+npm run build          # Build for production
+npm run start:prod     # Run production build
 
-# test coverage
-$ npm run test:cov
+# Linting & Formatting
+npm run lint           # Run ESLint
+npm run format         # Format code with Prettier
+
+# Testing
+npm run test           # Run unit tests
+npm run test:watch     # Run tests with watch mode
+npm run test:cov       # Run tests with coverage
+npm run test:e2e       # Run E2E tests
 ```
 
-## Deployment
+## Database Schema
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Asset
+- `id` - Primary key
+- `name` - Asset name
+- `serialNumber` - Serial number
+- `status` - Status (AVAILABLE, BORROWED, BROKEN, DISABLED)
+- `purchaseDate` - Purchase date
+- `typeId` - Foreign key to AssetType
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### AssetType
+- `id` - Primary key
+- `name` - Type name
+
+### User
+- `id` - Primary key
+- `email` - Email address
+- `name` - User name
+- `role` - Role (ADMIN, STAFF, USER)
+
+### Transaction
+- `id` - Primary key
+- `assetId` - Foreign key to Asset
+- `userId` - Foreign key to User
+- `transactionType` - Type (BORROW, RETURN)
+- `date` - Transaction date
+
+### Log
+- `id` - Primary key
+- `userId` - Foreign key to User
+- `action` - Action performed
+- `timestamp` - Timestamp
+
+## Prisma Commands
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Create new migration
+npx prisma migrate dev --name <migration-name>
+
+# Apply migrations
+npx prisma migrate deploy
+
+# Reset database (development only)
+npx prisma migrate reset
+
+# Generate Prisma Client
+npx prisma generate
+
+# Open Prisma Studio
+npx prisma studio
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Development Tips
 
-## Resources
+- Use Prisma Studio (`npx prisma studio`) to view and edit database data via GUI
+- Verify `.env` file has correct `DATABASE_URL`
+- Use `npm run lint` to check code before committing
+- Write unit tests for services
 
-Check out a few resources that may come in handy when working with NestJS:
+## Troubleshooting
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Error: Can't reach database**
+- Check `DATABASE_URL` in `.env`
+- Verify database server is running
 
-## Support
+**Error: Prisma migration failed**
+- Run `npx prisma migrate reset` for development database only
+- Check `schema.prisma` for errors
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Error: Port already in use**
+- Default backend port is 3001
+- Change port in `main.ts` or stop process using port 3001
